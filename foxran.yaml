@@ -1,0 +1,32 @@
+manifest_version: 1
+
+extension:
+  id: "local_asr"
+  name: "本地语音识别"
+  version: "1.0.0"
+  type: "tool"
+  description: "在本机用 SenseVoice（sherpa-onnx）识别视频里的声音：中文、粤语、英语、日语、韩语，带背景音乐、笑声和情绪标记。跑在扩展自己的隔离环境里，装上即登记为语音转写模型，不用配置。"
+  author: "Ainierheokami"
+  repository: "https://github.com/Ainierheokami/foxran-plugin-local-asr"
+  tags:
+    - "media"
+    - "audio"
+
+compatibility:
+  foxran: ">=4.9.0"
+  python: ">=3.10"
+
+tool:
+  entry: "__init__.py"
+
+runtime:
+  project: "runtime"
+  # 安装时下载 SenseVoice 模型（约 230MB），放在扩展数据目录，重装不用重新下载
+  setup: ["{python}", "download_model.py"]
+  services:
+    asr:
+      command: ["{python}", "server.py", "--port", "{port}"]
+      health: "/health"
+      start: on_demand
+      idle_stop: 1800
+      startup_timeout: 120
